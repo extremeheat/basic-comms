@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws'
+import { WebSocket, WebSocketServer } from 'ws'
 
 interface MessageCreator {
   sendChunk(chunk: object): void
@@ -34,7 +34,7 @@ export class ClientEx<T> extends WebSocket {
   exec: T
 }
 
-export class ServerEx<T> extends WebSocket.Server {
+export class ServerEx<T> extends WebSocketServer {
   on(event: 'join', listener: (client: ClientEx<T>) => void): this
   // on(event: 'connection' | 'error' | 'headers' | 'close' | 'listening' | 'message', listener: (...args: any[]) => void): this;
   on(event: string, listener: (...args: any[]) => void): this

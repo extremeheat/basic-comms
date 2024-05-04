@@ -126,16 +126,16 @@ function addMethods (socket, methods) {
   socket.exec = {}
   if (!methods) return
   if (methods.imports) {
-    for (const [name, fn] of Object.entries(methods.imports)) {
+    for (const [name] of Object.entries(methods.imports)) {
       socket.exec[name] = async function (...args) {
-        return await socket.request(name, fn(...args))
+        return await socket.request(name, { args })
       }
     }
   }
   if (methods.exports) {
     for (const [name, fn] of Object.entries(methods.exports)) {
       socket.receive(name, async (message, resp) => {
-        const result = await fn(message)
+        const result = await fn(...message.args)
         resp?.sendResponse(result)
       })
     }
