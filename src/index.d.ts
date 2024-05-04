@@ -7,12 +7,12 @@ interface MessageCreator {
   sendBinaryResponse(response: Buffer): void
 }
 
-export class Client extends WebSocket {
+export class ClientEx<T> extends WebSocket {
   // Write a JSON object to the WebSocket
-  write(data: object): void
+  write(data: Record<string, any>): void
 
   // Send a JSON object message in full to the server
-  sendMessage(messageType: string, contents: object): void
+  sendMessage(messageType: string, contents: Record<string, any>): void
   // Send a binary message in full to the server
   sendBinaryMessage(messageType: string, contents: Buffer): void
 
@@ -20,20 +20,24 @@ export class Client extends WebSocket {
   createMessage(messageType: string): MessageCreator
 
   // Send a message to server & get response
-  request(messageType: string, contents: object, chunkCb?: (obj: object) => void, timeout?: number): Promise<object>
+  request(messageType: string, contents: Record<string, any>, chunkCb?: (obj: Record<string, any>) => void, timeout?: number): Promise<object>
   // Send a message to server & get response in binary
   requestBinary(messageType: string, contents: Buffer, chunkCb?: (obj: Buffer) => void, timeout?: number): Promise<Buffer>
 
   // Receive a message from the server (one not asked for)
-  receive(messageType: string, cb: (obj: object) => void): void
-  receive(messageType: string, cb: (obj: object, responder: MessageCreator) => void): void
+  receive(messageType: string, cb: (obj: Record<string, any>) => void): void
+  receive(messageType: string, cb: (obj: Record<string, any>, responder: MessageCreator) => void): void
   // Receive a binary message from the server (one not asked for)
   receiveBinary(messageType: string, cb: (obj: Buffer) => void): void
   receiveBinary(messageType: string, cb: (obj: Buffer, responder: MessageCreator) => void): void
+
+  exec: T
 }
 
-export class Server extends WebSocket.Server {
-  on(event: 'connection', listener: (client: Client) => void): this
+export class ServerEx<T> extends WebSocket.Server {
+  on(event: 'join', listener: (client: ClientEx<T>) => void): this
+  // on(event: 'connection' | 'error' | 'headers' | 'close' | 'listening' | 'message', listener: (...args: any[]) => void): this;
+  on(event: string, listener: (...args: any[]) => void): this
 }
 
 export interface WSClientOptions {
@@ -43,5 +47,13 @@ export interface WSServerOptions {
   port: number
 }
 
-export function createClient(options: { ws: WSClientOptions }): Client
-export function createServer(options: { ws: WSServerOptions }): Server
+export function createClient<T>(options: { 
+  ws: WSClientOptions,
+  imports?: T,
+  exports?: Record<string, Function>
+}): ClientEx<T>
+export function createServer<T>(options: {
+  ws: WSServerOptions,
+  imports?: T,
+  exports?: Record<string, Function>
+}): ServerEx<T>

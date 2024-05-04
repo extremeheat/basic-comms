@@ -1,8 +1,9 @@
 /* eslint-disable no-dupe-keys */ // eslint is dumb and doesn't understand that the keys are being overwritten on purpose
 const { onceWithTimeout } = require('./util')
 const debug = require('debug')('basic-ipc').enabled && require('debug')('basic-ipc')
+// const debug = console.log
 
-module.exports = function inject (socket) {
+function inject (socket, methods) {
   let ids = 0
   const expectingBinaryMessages = new Set()
   function onBinaryMessage (/** @type {Buffer} */message) {
@@ -116,5 +117,29 @@ module.exports = function inject (socket) {
     expectingBinaryMessages.add(buf)
     socket.on('binMsg.' + type, (resp, id) => handler(resp, id && socket.createMessage(id), id))
   }
+
+  addMethods(socket, methods)
   return socket
 }
+
+function addMethods (socket, methods) {
+  socket.exec = {}
+  if (!methods) return
+  if (methods.imports) {
+    for (const [name, fn] of Object.entries(methods.imports)) {
+      socket.exec[name] = async function (...args) {
+        return await socket.request(name, fn(...args))
+      }
+    }
+  }
+  if (methods.exports) {
+    for (const [name, fn] of Object.entries(methods.exports)) {
+      socket.receive(name, async (message, resp) => {
+        const result = await fn(message)
+        resp?.sendResponse(result)
+      })
+    }
+  }
+}
+
+module.exports = inject

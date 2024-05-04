@@ -11,7 +11,7 @@ server.once('listening', () => {
     client.sendMessage('hello', { world: '!' })
   })
 })
-server.on('connection', async (client) => {
+server.on('join', async (client) => {
   client.receive('hello', (message) => {
     console.log('Received hello message:', message)
     server.close()

@@ -5,28 +5,31 @@ const injectPlugin = require('./plugin')
 /**
  * Creates a websocket client with helper methods for sending and receiving messages
  * @param {import('./index').WSClientOptions} options
- * @returns {import('./index').Client}
+ * @param {object} [methods]
+ * @returns {import('./index').ClientEx}
  */
-function createClient (options = { url: 'ws://localhost:8091' }) {
+function createClient (options = { url: 'ws://localhost:8091' }, methods) {
   const socket = new WebSocket(options.url)
-  return injectPlugin(socket)
+  return injectPlugin(socket, methods)
 }
 
 /**
  * Creates a websocket server with helper methods for sending and receiving messages
  * @param {import('./index').WSServerOptions} options
- * @returns {import('./index').Server}
+ * @param {object} [methods]
+ * @returns {import('./index').ServerEx}
  */
-function createServer (options = { port: 8091 }) {
+function createServer (options = { port: 8091 }, methods) {
   const server = new WebSocket.Server({ port: options.port })
   server.on('connection', (socket) => {
-    injectPlugin(socket)
+    injectPlugin(socket, methods)
+    server.emit('join', socket)
   })
   return server
 }
 
 function testText (cb) {
-  const server = createServer()
+  const server = createServer({ port: 8091 })
   server.on('connection', async (client) => {
     client.sendMessage('hello', { message: 'Hello from server' })
     const loginData = await client.request('loginRequest', {}, console.log)
@@ -34,7 +37,7 @@ function testText (cb) {
     client.sendBinaryMessage('helloBin', Buffer.from('Hello from server'))
   })
 
-  const client = createClient()
+  const client = createClient({ url: 'ws://localhost:8091' })
   client.receive('hello', (message) => {
     console.log('Received hello message:', message)
   })
