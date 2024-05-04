@@ -22,7 +22,10 @@
   "homepage": "https://github.com/extremeheat/node-basic-ipc#readme",
   "devDependencies": {
     "basic-ipc": "file:.",
-    "standard": "^17.0.0",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "standard": "^17.0.0"
+  },
+  "dependencies": {
+    "ws": "^8.17.0"
   }
 }
