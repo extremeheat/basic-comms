@@ -29,7 +29,7 @@ function testText (cb) {
   const server = createServer()
   server.on('connection', async (client) => {
     client.sendMessage('hello', { message: 'Hello from server' })
-    const loginData = await client.request('login', {}, console.log)
+    const loginData = await client.request('loginRequest', {}, console.log)
     console.log('Login response:', loginData)
     client.sendBinaryMessage('helloBin', Buffer.from('Hello from server'))
   })
@@ -37,10 +37,12 @@ function testText (cb) {
   const client = createClient()
   client.receive('hello', (message) => {
     console.log('Received hello message:', message)
-    const loginData = client.createMessage('login')
-    loginData.sendChunk({ chunk: 'chunk1' })
-    loginData.sendChunk({ chunk: 'chunk2' })
-    loginData.sendResponse({ message: 'Login successful' })
+  })
+  client.receive('loginRequest', (message, resp) => {
+    console.log('Received login request:', message)
+    resp.sendChunk({ chunk: 'chunk1' })
+    resp.sendChunk({ chunk: 'chunk2' })
+    resp.sendResponse({ message: 'Login successful' })
   })
   client.receiveBinary('helloBin', (message) => {
     console.log('Received binary hello message:', message.toString())
