@@ -1,7 +1,7 @@
 {
-  "name": "prismarine-template",
-  "version": "1.0.0",
-  "description": "A template repository to make it easy to create new prismarine repo",
+  "name": "basic-ipc",
+  "version": "0.0.1",
+  "description": "IPC library for client-server comms over WebSockets and HTTP",
   "main": "src/index.js",
   "scripts": {
     "test": "mocha --reporter spec --exit",
@@ -11,17 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/extremeheat/prismarine-template.git"
+    "url": "git+https://github.com/extremeheat/node-basic-ipc.git"
   },
   "keywords": [],
   "author": "extremeheat",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/extremeheat/prismarine-template/issues"
+    "url": "https://github.com/extremeheat/node-basic-ipc/issues"
   },
-  "homepage": "https://github.com/extremeheat/prismarine-template#readme",
+  "homepage": "https://github.com/extremeheat/node-basic-ipc#readme",
   "devDependencies": {
-    "prismarine-template": "file:.",
+    "basic-ipc": "file:.",
     "standard": "^17.0.0",
     "mocha": "^10.0.0"
   }

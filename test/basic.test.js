@@ -1,5 +1,5 @@
 /* eslint-env mocha */
-const lib = require('prismarine-template')
+const lib = require('basic-ipc')
 
 describe('basic', () => {
   it('test', () => {

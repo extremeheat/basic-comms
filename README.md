@@ -1,8 +1,8 @@
-# prismarine-template
-[![NPM version](https://img.shields.io/npm/v/prismarine-template.svg)](http://npmjs.com/package/prismarine-template)
-[![Build Status](https://github.com/extremeheat/prismarine-template/actions/workflows/ci.yml/badge.svg)](https://github.com/extremeheat/prismarine-template/actions/workflows/)
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/extremeheat/prismarine-template)
+# node-basic-ipc
+[![NPM version](https://img.shields.io/npm/v/basic-ipc.svg)](http://npmjs.com/package/basic-ipc)
+[![Build Status](https://github.com/extremeheat/basic-ipc/actions/workflows/ci.yml/badge.svg)](https://github.com/extremeheat/basic-ipc/actions/workflows/)
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/extremeheat/basic-ipc)
 
-Template for making Node.js projects
+Node.js real-time client <-> server (between backend and browser) communication library for IPC.
 
-Replace all "prismarine-template" with the project name.
+WIP
