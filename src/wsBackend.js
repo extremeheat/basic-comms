@@ -48,7 +48,7 @@ function testText (cb) {
     resp.sendResponse({ message: 'Login successful' })
   })
   client.receiveBinary('helloBin', (message) => {
-    console.log('Received binary hello message:', message.toString())
+    console.log('Received binary hello message:', [message.toString()])
     server.close()
     client.close()
     cb?.()

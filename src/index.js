@@ -1,4 +1,6 @@
-const wsBackend = require('./wsBackend')
+const wsBackend = typeof window === 'undefined'
+  ? require('./wsBackend')
+  : require('./webBackend')
 const { raise } = require('./util')
 
 function createServer (options) {
@@ -13,4 +15,8 @@ function createClient (options) {
 
 module.exports = {
   createServer, createClient
+}
+
+if (typeof window !== 'undefined') {
+  window.ipc = module.exports
 }

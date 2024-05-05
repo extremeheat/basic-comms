@@ -1,7 +1,9 @@
 /* eslint-disable no-dupe-keys */ // eslint is dumb and doesn't understand that the keys are being overwritten on purpose
 const { onceWithTimeout } = require('./util')
-const debug = require('debug')('basic-ipc').enabled && require('debug')('basic-ipc')
-// const debug = console.log
+const BinaryStream = require('bytewriter/src/browser')
+const debug = typeof window === 'undefined'
+  ? (require('debug')('basic-ipc').enabled && require('debug')('basic-ipc'))
+  : (window && window.location.search.includes('debug') && console.log)
 
 function inject (socket, methods) {
   let ids = 0
@@ -10,8 +12,16 @@ function inject (socket, methods) {
     debug?.('-> BIN', message.toString())
     socket.emit('binMsg', message)
     for (const expected of expectingBinaryMessages) {
-      if (message.slice(0, expected.length).equals(expected)) {
-        socket.emit('binMsg.' + expected.slice(0, -4).toString(), message.slice(expected.length), message.slice(expected.length - 4).readUInt32BE())
+      if (BinaryStream.buffersEqual(message.subarray(0, expected.length), expected)) {
+        const stream = new BinaryStream(message)
+        const messageType = stream.readStringRaw(expected.length - 4) // (expected includes the name + 4 byte ID)
+        const id = stream.readUInt32BE()
+        const data = stream.readRemaining()
+        socket.emit(
+          'binMsg.' + messageType,
+          data,
+          id
+        )
       }
     }
   }
@@ -39,12 +49,11 @@ function inject (socket, methods) {
   socket.write = (data) => socket.send(JSON.stringify(data))
 
   function _sendBinaryMessage (messageType, messageContents, id) {
-    // messageType + (expected response ID?) + messageContents
-    const messageBuf = Buffer.alloc(Buffer.byteLength(messageType) + 4 + Buffer.byteLength(messageContents))
-    messageBuf.write(messageType)
-    messageBuf.writeUInt32BE(id, Buffer.byteLength(messageType))
-    messageContents.copy(messageBuf, Buffer.byteLength(messageType) + 4)
-    socket.send(messageBuf)
+    const messageBuf = new BinaryStream()
+    messageBuf.writeStringRaw(messageType)
+    messageBuf.writeUInt32BE(id)
+    messageBuf.writeBuffer(messageContents)
+    socket.send(messageBuf.getBuffer())
   }
   socket.sendBinaryMessage = function (messageType, messageContents, id) {
     debug?.('<- BIN', messageType, messageContents, id)
@@ -68,7 +77,7 @@ function inject (socket, methods) {
       },
 
       sendBinaryChunk (chunk) {
-        if (!Buffer.isBuffer(chunk)) throw new Error('Chunk must be a buffer')
+        if (!(chunk instanceof ArrayBuffer)) throw new Error('Chunk must be a buffer')
         _sendBinaryMessage('chunk.' + messageType, chunk, expectedResponseId)
       },
       sendBinaryResponse (response) {
@@ -112,9 +121,10 @@ function inject (socket, methods) {
   }
 
   socket.receiveBinary = async function (type, handler) {
-    const buf = Buffer.alloc(Buffer.byteLength(type) + 4)
-    buf.write(type)
-    expectingBinaryMessages.add(buf)
+    const stream = new BinaryStream()
+    stream.writeStringRaw(type)
+    stream.writeUInt32BE(0) // ID is 0 for non-response messages
+    expectingBinaryMessages.add(stream.getBuffer())
     socket.on('binMsg.' + type, (resp, id) => handler(resp, id && socket.createMessage(id), id))
   }
 
