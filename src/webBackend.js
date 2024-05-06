@@ -48,7 +48,8 @@ class SimpleEmitter {
 function createClient (options = { url: 'ws://localhost:8091' }, methods) {
   const socket = new window.WebSocket(options.url)
   SimpleEmitter.injectInto(socket)
-  socket.onmessage = ({ data }) => socket.emit('message', data)
+  socket.addEventListener('message', ({ data }) => socket.emit('message', data))
+  socket.addEventListener('open', () => socket.emit('open'))
   return injectPlugin(socket, methods)
 }
 

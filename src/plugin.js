@@ -6,6 +6,15 @@ const debug = typeof window === 'undefined'
   : (window && window.location.search.includes('debug') && console.log)
 
 function inject (socket, methods) {
+  let ready
+  socket.waitForReady = () => new Promise((resolve) => {
+    if (ready) return resolve(true)
+    socket.once('open', () => {
+      ready = true
+      resolve(true)
+    })
+  })
+
   let ids = 0
   const expectingBinaryMessages = new Set()
   function onBinaryMessage (/** @type {Buffer} */message) {

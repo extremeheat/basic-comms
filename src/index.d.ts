@@ -8,6 +8,9 @@ interface MessageCreator {
 }
 
 export class ClientEx<T> extends WebSocket {
+  // Wait for the WebSocket to be ready
+  waitForReady(): Promise<void>
+
   // Write a JSON object to the WebSocket
   write(data: Record<string, any>): void
 

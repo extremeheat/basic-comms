@@ -14,7 +14,7 @@ describe('basic', () => {
       const client = lib.createClient({
         ws: { url: 'ws://localhost:8091' }
       })
-      client.once('open', () => {
+      client.waitForReady().then(() => {
         client.close()
         server.close()
         done()

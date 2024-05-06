@@ -10,6 +10,14 @@ const injectPlugin = require('./plugin')
  */
 function createClient (options = { url: 'ws://localhost:8091' }, methods) {
   const socket = new WebSocket(options.url)
+  let ready = false
+  socket.waitForReady = () => new Promise((resolve) => {
+    if (ready) return resolve(true)
+    socket.on('open', () => {
+      ready = true
+      resolve(true)
+    })
+  })
   return injectPlugin(socket, methods)
 }
 
