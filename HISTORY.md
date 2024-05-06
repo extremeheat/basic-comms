@@ -4,7 +4,6 @@
 * [Fix method calling](https://github.com/extremeheat/node-basic-ipc/commit/2705b0f6380989dbd5de5bcc20cda3452a19fd92) (thanks @extremeheat)
 * [Add basic method calling abstraction](https://github.com/extremeheat/node-basic-ipc/commit/a677b1915be1941e3edd6deb117e85e60f9ac406) (thanks @extremeheat)
 * [feat: Respond to message requests in receive/receiveBinary](https://github.com/extremeheat/node-basic-ipc/commit/41c2ba77b9fe5d86e64ab2c9cfe154458265c309) (thanks @extremeheat)
-* [Fix publish action](https://github.com/extremeheat/node-basic-ipc/commit/d22d28c9f1a47b6770733dc1884b5a39930c6cfc) (thanks @extremeheat)
 
 ## 0.0.1
 * Initial implementation, it works
