@@ -3,7 +3,7 @@ const { onceWithTimeout } = require('./util')
 const BinaryStream = require('bytewriter/src/browser')
 const debug = typeof window === 'undefined'
   ? (require('debug')('basic-ipc').enabled && require('debug')('basic-ipc'))
-  : (window && window.location.search.includes('debug') && console.log)
+  : (window.debugging ? console.log : null)
 
 function inject (socket, methods) {
   let ready
@@ -26,6 +26,7 @@ function inject (socket, methods) {
         const messageType = stream.readStringRaw(expected.length - 4) // (expected includes the name + 4 byte ID)
         const id = stream.readUInt32BE()
         const data = stream.readRemaining()
+        debug?.('-> BIN (dec)', messageType, data, id)
         socket.emit(
           'binMsg.' + messageType,
           data,
@@ -48,7 +49,7 @@ function inject (socket, methods) {
     }
   }
   socket.on('message', (message) => {
-    if (message[0] === 0x7b && message[message.length - 1] === 0x7d) {
+    if ((typeof message === 'string') || (message[0] === 0x7b && message[message.length - 1] === 0x7d)) {
       return onTextMessage(message)
     } else {
       return onBinaryMessage(message)
@@ -82,6 +83,8 @@ function inject (socket, methods) {
         socket.write({ T: undefined, ...chunk, T: 'chunk.' + messageType, I: expectedResponseId })
       },
       sendResponse (response) {
+        if (typeof response !== 'object') throw new Error('Response must be an object')
+        debug?.('<- TXT', messageType, response, expectedResponseId)
         socket.write({ T: undefined, ...response, T: messageType, I: expectedResponseId })
       },
 
@@ -102,9 +105,9 @@ function inject (socket, methods) {
     function onChunk (message) {
       chunkCb?.(message)
     }
-    socket.on('msgResp.chunk.' + id + type, onChunk)
+    socket.on('msgResp.chunk.' + id, onChunk)
     const result = await onceWithTimeout(socket, 'msgResp.' + id, timeout)
-    socket.off('msgResp.chunk.' + id + type, onChunk)
+    socket.off('msgResp.chunk.' + id, onChunk)
     return result
   }
   socket.requestBinary = async function (type, payload, chunkCb, timeout = 5000) {
@@ -119,9 +122,9 @@ function inject (socket, methods) {
     function onChunk (message) {
       chunkCb?.(message)
     }
-    socket.on('binMsg.chunk.' + type, onChunk)
+    socket.on('binMsg.chunk.' + id, onChunk)
     const result = await onceWithTimeout(socket, 'binMsg.' + type, timeout)
-    socket.off('binMsg.chunk.' + type, onChunk)
+    socket.off('binMsg.chunk.' + id, onChunk)
     return result
   }
 
