@@ -1,3 +1,7 @@
+## 0.1.1
+* [Fixes to event handling](https://github.com/extremeheat/node-basic-ipc/commit/3c80d167a0883f9eb246c147838c2e8bef44481c) (thanks @extremeheat)
+* [Update browser API](https://github.com/extremeheat/node-basic-ipc/commit/f636ae94d1c55bb7b90bb626865f26c778a75a6c) (thanks @extremeheat)
+
 ## 0.1.0
 * [Add a waitForReady method](https://github.com/extremeheat/node-basic-ipc/commit/261cd9464c1082fe9211a85bcbb191be4db94a40) (thanks @extremeheat)
 * [Add a web backend](https://github.com/extremeheat/node-basic-ipc/commit/995dac055d8c11752525fbb8cfb624edc526ab2d) (thanks @extremeheat)
