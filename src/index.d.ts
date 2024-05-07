@@ -39,6 +39,7 @@ export class ClientEx<T> extends WebSocket {
 
 export class ServerEx<T> extends WebSocketServer {
   on(event: 'join', listener: (client: ClientEx<T>) => void): this
+  on(event: "close" | "listening", cb: (this: ServerEx<T>) => void): this
   // on(event: 'connection' | 'error' | 'headers' | 'close' | 'listening' | 'message', listener: (...args: any[]) => void): this;
   on(event: string, listener: (...args: any[]) => void): this
 }

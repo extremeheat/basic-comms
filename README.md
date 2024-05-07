@@ -16,7 +16,7 @@ Features:
 npm install basic-ipc
 ```
 
-## Usage
+## Usage (Node.js)
 Simple example of server and client communication using WebSocket:
 ```javascript
 const ipc = require('basic-ipc');
@@ -40,6 +40,14 @@ server.on('join', async (client) => {
     client.close()
   })
 })
+```
+
+## Usage (Browser)
+
+In the browser, you can only create clients. basic-ipc exposes a special browser API that only exports code relevant to the client side. You can access it by importing `basic-ipc/browser`:
+
+```js
+const ipc = require('basic-ipc/browser');
 ```
 
 ## API

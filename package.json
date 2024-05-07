@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha --reporter spec --exit",
-    "buildWeb": "browserify src/index.js -x buffer -x ws -x debug -o dist/basic-ipc.js",
+    "buildWeb": "browserify browser.js -x buffer -x ws -x debug -o dist/basic-ipc.js",
     "pretest": "npm run lint",
     "lint": "standard",
     "fix": "standard --fix"
